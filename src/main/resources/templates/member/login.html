@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>로그인</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="board_wrap">
+    <div class="board_title">
+        <strong>로그인</strong>
+    </div>
+    <div class="board_write_wrap">
+        <div class="board_write">
+            <form id="loginForm">
+                <div class="title">
+                    <dl>
+                        <dt>아이디</dt>
+                        <dd><input name="userId" placeholder="아이디 입력" type="text"></dd>
+                    </dl>
+                </div>
+                <div class="info">
+                    <dl>
+                        <dt>비밀번호</dt>
+                        <dd><input name="userPassword" placeholder="비밀번호 입력" type="password"></dd>
+                    </dl>
+                </div>
+            </form>
+        </div>
+        <div class="bt_wrap">
+            <button id="loginBtn" class="on" type="button">로그인</button>
+            <a href="list.html">취소</a>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    let loginForm = document.getElementById("loginForm");
+    let loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.onclick = function () {
+        loginForm.action = "/user/login";
+        loginForm.method = "POST";
+
+        loginForm.submit();
+    }
+</script>
+</html>
