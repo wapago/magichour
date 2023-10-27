@@ -1,9 +1,9 @@
 package com.example.magichour.controller;
 
 import com.example.magichour.entity.Member;
-import com.example.magichour.model.BoxOfficeResult;
+import com.example.magichour.model.boxoffice.BoxOffice;
 import com.example.magichour.util.OkHttpUtils;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,16 +23,19 @@ public class HomeController {
 
     @GetMapping("/")
     public String Home(@SessionAttribute(name = "loginMember", required = false) Member member, Model model, HttpSession session) {
-        String boxoffice = OkHttpUtils.get(BOXOFFICE_URL + BOXOFFICE_API_KEY);
-        log.info(boxoffice);
+        String jsonData = OkHttpUtils.get(BOXOFFICE_URL + BOXOFFICE_API_KEY);
+        log.info(jsonData);
 
-        Gson gson = new Gson();
-        BoxOfficeResult bor = gson.fromJson(boxoffice, BoxOfficeResult.class);
-        System.out.println("bor = " + bor);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            BoxOffice boxOffice = objectMapper.readValue(jsonData, BoxOffice.class);
 
-        model.addAttribute("loginMember", member);
-        model.addAttribute("bor", bor.getBoxofficeType());
+            model.addAttribute("loginMember", member);
+            model.addAttribute("boxoffice", boxOffice);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return "/home";
+        return "home";
     }
 }
