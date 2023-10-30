@@ -2,9 +2,7 @@ package com.example.magichour.service.member;
 
 import com.example.magichour.entity.Member;
 import com.example.magichour.model.member.JoinRequest;
-import com.example.magichour.model.member.JoinResponse;
 import com.example.magichour.model.member.LoginRequest;
-import com.example.magichour.model.member.LoginResponse;
 import com.example.magichour.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -28,11 +26,6 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         memberRepository.save(member);
-    }
-
-    @Override
-    public JoinResponse joinAfter(JoinRequest joinRequest) {
-        return null;
     }
 
     @Override
