@@ -3,11 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
 <div>
+    <button type="button" th:onclick="|location.href='@{/member/join}'|">회원가입</button>
+    <button type="button" th:onclick="|location.href='@{/member/login}'|">로그인</button>
     <h1>[[${loginMember.userId}]] 님 환영합니다!!</h1>
-    <h2>[[${boxoffice}]]</h2>
+<!--    <h2>[[${boxoffice}]]</h2>-->
+</div>
+    <h1>박스오피스 순위</h1>
+</div>
+<div>
+
 </div>
 </body>
+<script>
+
+</script>
 </html>
