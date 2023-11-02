@@ -13,16 +13,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Controller
 @RequestMapping
 @Log4j2
 public class HomeController {
     // TODO
-    //   1. 박스오피스 api호출
+    //   1.  박스오피스 api호출
     //   2.  응답값에서 제목 추출
-    //   3. 제목으로 kmdb api 호출
+    //   3.  제목으로 kmdb api 호출
     //   4.  순위, 제목, 연도, 국가, 예매율, 누적관객 dto로 매핑 후 view에 뿌리기
+    //   5.  BATCH??
 
     private final String BOXOFFICE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?targetDt=20231028&key=";
     private final String BOXOFFICE_API_KEY = "977408773efa088487a4cf153953630c";
@@ -32,7 +36,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String Home(@SessionAttribute(name = "loginMember", required = false) Member member, Model model) {
-        JsonObject movieObject = new JsonObject();
+        List<JsonObject> movieList = new ArrayList<>();
 
         // 박스오피스
         String boxofficeResponse = OkHttpUtils.get(BOXOFFICE_URL + BOXOFFICE_API_KEY);
@@ -43,9 +47,9 @@ public class HomeController {
         JsonArray dailyBoxOfficeList = boxOfficeResult.getAsJsonArray("dailyBoxOfficeList");
         log.info(dailyBoxOfficeList);
 
-
         for(int i=0; i<dailyBoxOfficeList.size(); i++) {
             JsonElement movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm");
+            JsonElement movieCd = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieCd");
             JsonElement audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc");
             JsonElement openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt");
             JsonElement rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank");
@@ -64,7 +68,10 @@ public class HomeController {
             JsonElement actors = kmdbResult.get("actors");
             JsonElement plots = kmdbResult.get("plots");
 
+            JsonObject movieObject = new JsonObject();
+
             movieObject.add("movieNm", movieNm);    // 제목
+            movieObject.add("movieCd", movieCd);    // 영화코드
             movieObject.add("audiAcc", audiAcc);    // 누적관객수
             movieObject.add("openDt", openDt);      // 개봉일
             movieObject.add("rank", rank);          // 랭킹
@@ -79,8 +86,17 @@ public class HomeController {
             movieObject.add("plots", plots);
 
             log.info(movieObject);
+
+            movieList.add(movieObject);
         }
 
+        log.info(movieList.size());
+
+        for(int i=0; i<movieList.size(); i++) {
+            log.info(movieList.get(i).get("movieNm"));
+        }
+
+        model.addAttribute("movieList", movieList);
         model.addAttribute("loginMember", member);
 
         return "home";
