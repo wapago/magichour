@@ -1,105 +1,93 @@
 package com.example.magichour.controller;
 
-import com.example.magichour.entity.Member;
+import com.example.magichour.entity.movie.Movie;
 import com.example.magichour.util.OkHttpUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequestMapping
 @Log4j2
 public class HomeController {
-    // TODO
-    //   1.  박스오피스 api호출
-    //   2.  응답값에서 제목 추출
-    //   3.  제목으로 kmdb api 호출
-    //   4.  순위, 제목, 연도, 국가, 예매율, 누적관객 dto로 매핑 후 view에 뿌리기
-    //   5.  BATCH??
+    private static final String BOXOFFICE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?targetDt=20231028&key=";
+    private static final String BOXOFFICE_API_KEY = "977408773efa088487a4cf153953630c";
 
-    private final String BOXOFFICE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?targetDt=20231028&key=";
-    private final String BOXOFFICE_API_KEY = "977408773efa088487a4cf153953630c";
+    private static final String KMDB_URL = "http://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?collection=kmdb_new2&detail=Y&ServiceKey=";
+    private static final String KMDB_API_KEY = "LZT45SDJ26C2CL3NEF8N";
 
-    private final String KMDB_URL = "http://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?collection=kmdb_new2&detail=Y&ServiceKey=";
-    private final String KMDB_API_KEY = "LZT45SDJ26C2CL3NEF8N";
+    @GetMapping(value = "/home")
+    public ResponseEntity<List<Movie>> Home(HttpSession session) throws JsonProcessingException {
+        List<Movie> movieList = new ArrayList<>();
 
-    @GetMapping("/")
-    public String Home(@SessionAttribute(name = "loginMember", required = false) Member member, Model model) {
-        List<JsonObject> movieList = new ArrayList<>();
-
-        // 박스오피스
         String boxofficeResponse = OkHttpUtils.get(BOXOFFICE_URL + BOXOFFICE_API_KEY);
-
         JsonParser jsonParser = new JsonParser();
         JsonObject boxofficeRespToJson = (JsonObject) jsonParser.parse(boxofficeResponse);
         JsonObject boxOfficeResult = boxofficeRespToJson.getAsJsonObject("boxOfficeResult");
         JsonArray dailyBoxOfficeList = boxOfficeResult.getAsJsonArray("dailyBoxOfficeList");
-        log.info(dailyBoxOfficeList);
 
         for(int i=0; i<dailyBoxOfficeList.size(); i++) {
-            JsonElement movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm");
-            JsonElement movieCd = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieCd");
-            JsonElement audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc");
-            JsonElement openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt");
-            JsonElement rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank");
+            String movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm").getAsString();
+            String audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc").getAsString();
+            String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString();
+            String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
-            String kmdbResponse = OkHttpUtils.get(KMDB_URL + KMDB_API_KEY + "&title=" + movieNm.getAsString());
+            String kmdbResponse = OkHttpUtils.get(KMDB_URL + KMDB_API_KEY + "&title=" + movieNm);
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
-            JsonElement posters = kmdbResult.get("posters");
-            JsonElement prodYear = kmdbResult.get("prodYear");
-            JsonElement directors = kmdbResult.get("directors");
-            JsonElement nation = kmdbResult.get("nation");
-            JsonElement runtime = kmdbResult.get("runtime");
-            JsonElement rating = kmdbResult.get("rating");
-            JsonElement genre = kmdbResult.get("genre");
-            JsonElement actors = kmdbResult.get("actors");
-            JsonElement plots = kmdbResult.get("plots");
+
+            String docId = kmdbResult.get("DOCID").getAsString();
+            String posters = kmdbResult.get("posters").getAsString();
+            String prodYear = kmdbResult.get("prodYear").getAsString();
+//            String directors = kmdbResult.get("directors").getAsString();
+            String nation = kmdbResult.get("nation").getAsString();
+            String runtime = kmdbResult.get("runtime").getAsString();
+            String rating = kmdbResult.get("rating").getAsString();
+            String genre = kmdbResult.get("genre").getAsString();
+//            String actors = kmdbResult.get("actors").getAsString();
+//            String plots = kmdbResult.get("plots").getAsString();
 
             JsonObject movieObject = new JsonObject();
 
-            movieObject.add("movieNm", movieNm);    // 제목
-            movieObject.add("movieCd", movieCd);    // 영화코드
-            movieObject.add("audiAcc", audiAcc);    // 누적관객수
-            movieObject.add("openDt", openDt);      // 개봉일
-            movieObject.add("rank", rank);          // 랭킹
-            movieObject.add("posters", posters);    // 포스터 url
-            movieObject.add("prodYear", prodYear);
-            movieObject.add("directors", directors);
-            movieObject.add("nation", nation);
-            movieObject.add("runtime", runtime);
-            movieObject.add("rating", rating);
-            movieObject.add("genre", genre);
-            movieObject.add("actors", actors);
-            movieObject.add("plots", plots);
+            movieObject.addProperty("movieNm", movieNm);    // 제목
+            movieObject.addProperty("audiAcc", audiAcc);    // 누적관객수
+            movieObject.addProperty("openDt", openDt);      // 개봉일
+            movieObject.addProperty("rank", rank);          // 랭킹
+            movieObject.addProperty("posters", posters);    // 포스터 url
+            movieObject.addProperty("docId", docId);
+            movieObject.addProperty("prodYear", prodYear);
+//            movieObject.addProperty("directors", directors);
+            movieObject.addProperty("nation", nation);
+            movieObject.addProperty("runtime", runtime);
+            movieObject.addProperty("rating", rating);
+            movieObject.addProperty("genre", genre);
+//            movieObject.addProperty("actors", actors);
+//            movieObject.addProperty("plots", plots);
 
-            log.info(movieObject);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Movie movie = objectMapper.readValue(movieObject.toString(), Movie.class);
 
-            movieList.add(movieObject);
+//            Movie movie = Movie.of(movieObject.toString());
+
+            log.info(movie.getMovieNm());
+
+            movieList.add(movie);
         }
 
-        log.info(movieList.size());
+        return ResponseEntity.ok(movieList);
 
-        for(int i=0; i<movieList.size(); i++) {
-            log.info(movieList.get(i).get("movieNm"));
-        }
-
-        model.addAttribute("movieList", movieList);
-        model.addAttribute("loginMember", member);
-
-        return "home";
     }
 
 }
