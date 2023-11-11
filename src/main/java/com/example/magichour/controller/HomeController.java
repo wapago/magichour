@@ -5,7 +5,6 @@ import com.example.magichour.util.OkHttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
@@ -45,19 +44,21 @@ public class HomeController {
 
             String kmdbResponse = OkHttpUtils.get(KMDB_URL + KMDB_API_KEY + "&title=" + movieNm);
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
+            log.info("kmdbRespToJson: " + kmdbRespToJson);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
+            log.info("kmdbResult: " + kmdbResult);
 
             String docId = kmdbResult.get("DOCID").getAsString();
             String posters = kmdbResult.get("posters").getAsString();
             String prodYear = kmdbResult.get("prodYear").getAsString();
-//            String directors = kmdbResult.get("directors").getAsString();
             String nation = kmdbResult.get("nation").getAsString();
             String runtime = kmdbResult.get("runtime").getAsString();
             String rating = kmdbResult.get("rating").getAsString();
             String genre = kmdbResult.get("genre").getAsString();
-//            String actors = kmdbResult.get("actors").getAsString();
-//            String plots = kmdbResult.get("plots").getAsString();
+            JsonArray directors = kmdbResult.getAsJsonObject("directors").getAsJsonArray("director");
+            JsonArray actors = kmdbResult.getAsJsonObject("actors").getAsJsonArray("actor");
+            JsonArray plots = kmdbResult.getAsJsonObject("plots").getAsJsonArray("plot");
 
             JsonObject movieObject = new JsonObject();
 
@@ -65,23 +66,19 @@ public class HomeController {
             movieObject.addProperty("audiAcc", audiAcc);    // 누적관객수
             movieObject.addProperty("openDt", openDt);      // 개봉일
             movieObject.addProperty("rank", rank);          // 랭킹
-            movieObject.addProperty("posters", posters);    // 포스터 url
             movieObject.addProperty("docId", docId);
+            movieObject.addProperty("posters", posters);    // 포스터 url
             movieObject.addProperty("prodYear", prodYear);
-//            movieObject.addProperty("directors", directors);
             movieObject.addProperty("nation", nation);
             movieObject.addProperty("runtime", runtime);
             movieObject.addProperty("rating", rating);
             movieObject.addProperty("genre", genre);
-//            movieObject.addProperty("actors", actors);
-//            movieObject.addProperty("plots", plots);
+            movieObject.add("directors", directors);
+            movieObject.add("actors", actors);
+            movieObject.add("plots", plots);
 
             ObjectMapper objectMapper = new ObjectMapper();
             Movie movie = objectMapper.readValue(movieObject.toString(), Movie.class);
-
-//            Movie movie = Movie.of(movieObject.toString());
-
-            log.info(movie.getMovieNm());
 
             movieList.add(movie);
         }

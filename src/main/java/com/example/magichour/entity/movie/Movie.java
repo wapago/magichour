@@ -3,7 +3,6 @@ package com.example.magichour.entity.movie;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
@@ -25,10 +24,4 @@ public class Movie {
     private String genre;
     private List<Actor> actors;
     private List<Plot> plots;
-
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static Movie of(String movieObject) {
-        return modelMapper.map(movieObject, Movie.class);
-    }
 }
