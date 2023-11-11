@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/movie
+    username: portfolio
+    password: 2841
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  config:
+    import: movie.yml
+
+logging:
+  level:
+    com:
+      example: debug
+    org:
+      springframework:
+        security:
+          web: trace
+
+

@@ -1,0 +1,7 @@
+box_office:
+  url: "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?targetDt=20231028&key="
+  api_key: "977408773efa088487a4cf153953630c"
+
+kmdb:
+  url: "http://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?collection=kmdb_new2&detail=Y&ServiceKey="
+  api_key: "LZT45SDJ26C2CL3NEF8N"

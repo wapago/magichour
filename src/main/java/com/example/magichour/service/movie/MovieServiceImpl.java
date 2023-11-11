@@ -1,4 +1,4 @@
-package com.example.magichour.controller;
+package com.example.magichour.service.movie;
 
 import com.example.magichour.entity.movie.Movie;
 import com.example.magichour.util.OkHttpUtils;
@@ -8,29 +8,33 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@RestController
-@RequestMapping
+@Service
 @Log4j2
-public class HomeController {
-    private static final String BOXOFFICE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?targetDt=20231028&key=";
-    private static final String BOXOFFICE_API_KEY = "977408773efa088487a4cf153953630c";
+public class MovieServiceImpl implements MovieService{
+    @Value("${box_office.url}")
+    private String boxOfficeUrl;
 
-    private static final String KMDB_URL = "http://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?collection=kmdb_new2&detail=Y&ServiceKey=";
-    private static final String KMDB_API_KEY = "LZT45SDJ26C2CL3NEF8N";
+    @Value("${box_office.api_key}")
+    private String boxOfficeKey;
 
-    @GetMapping(value = "/home")
-    public ResponseEntity<List<Movie>> Home(HttpSession session) throws JsonProcessingException {
+    @Value("${kmdb.url}")
+    private String kmdburl;
+
+    @Value("${kmdb.api_key}")
+    private String kmdbKey;
+
+    @Override
+    public List<Movie> getBoxofficeList() throws JsonProcessingException {
         List<Movie> movieList = new ArrayList<>();
 
-        String boxofficeResponse = OkHttpUtils.get(BOXOFFICE_URL + BOXOFFICE_API_KEY);
+        String boxofficeResponse = OkHttpUtils.get(boxOfficeUrl + boxOfficeKey);
+        log.info(boxofficeResponse);
         JsonParser jsonParser = new JsonParser();
         JsonObject boxofficeRespToJson = (JsonObject) jsonParser.parse(boxofficeResponse);
         JsonObject boxOfficeResult = boxofficeRespToJson.getAsJsonObject("boxOfficeResult");
@@ -42,12 +46,11 @@ public class HomeController {
             String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString();
             String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
-            String kmdbResponse = OkHttpUtils.get(KMDB_URL + KMDB_API_KEY + "&title=" + movieNm);
+            String kmdbResponse = OkHttpUtils.get(kmdburl + kmdbKey + "&title=" + movieNm);
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
-            log.info("kmdbRespToJson: " + kmdbRespToJson);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
-            log.info("kmdbResult: " + kmdbResult);
+            log.info(kmdbResponse);
 
             String docId = kmdbResult.get("DOCID").getAsString();
             String posters = kmdbResult.get("posters").getAsString();
@@ -83,8 +86,6 @@ public class HomeController {
             movieList.add(movie);
         }
 
-        return ResponseEntity.ok(movieList);
-
+        return movieList;
     }
-
 }
