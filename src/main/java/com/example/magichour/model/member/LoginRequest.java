@@ -1,8 +1,8 @@
 package com.example.magichour.model.member;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginRequest {

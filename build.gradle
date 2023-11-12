@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.17'
+    id 'org.springframework.boot' version '3.0.6'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
@@ -35,6 +35,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     // okhttp
     implementation('com.squareup.okhttp3:okhttp:4.10.0')
     // gson

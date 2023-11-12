@@ -4,11 +4,11 @@ import com.example.magichour.entity.movie.Movie;
 import com.example.magichour.service.movie.MovieService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 

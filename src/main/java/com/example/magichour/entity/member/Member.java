@@ -1,8 +1,8 @@
-package com.example.magichour.entity;
+package com.example.magichour.entity.member;
 
+import com.example.magichour.entity.BaseEntity;
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Entity
 @Getter

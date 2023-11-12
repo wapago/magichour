@@ -1,6 +1,6 @@
 package com.example.magichour;
 
-import com.example.magichour.entity.Member;
+import com.example.magichour.entity.member.Member;
 import com.example.magichour.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

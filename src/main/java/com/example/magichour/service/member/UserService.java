@@ -1,6 +1,6 @@
 package com.example.magichour.service.member;
 
-import com.example.magichour.entity.Member;
+import com.example.magichour.entity.member.Member;
 import com.example.magichour.model.member.JoinRequest;
 import com.example.magichour.model.member.LoginRequest;
 
