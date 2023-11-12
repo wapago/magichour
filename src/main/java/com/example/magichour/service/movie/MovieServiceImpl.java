@@ -10,13 +10,17 @@ import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Log4j2
-public class MovieServiceImpl implements MovieService{
+public class MovieServiceImpl implements MovieService {
     @Value("${box_office.url}")
     private String boxOfficeUrl;
 
@@ -24,17 +28,34 @@ public class MovieServiceImpl implements MovieService{
     private String boxOfficeKey;
 
     @Value("${kmdb.url}")
-    private String kmdburl;
+    private String kmdbUrl;
+
+    @Value("${kmdb.collection}")
+    private String kmdbCollection;
+
+    @Value("${kmdb.detail}")
+    private String kmdbDetail;
 
     @Value("${kmdb.api_key}")
     private String kmdbKey;
 
+
     @Override
-    public List<Movie> getBoxofficeList() throws JsonProcessingException {
+    public List<Movie> getDailyBoxofficeList() throws JsonProcessingException {
         List<Movie> movieList = new ArrayList<>();
 
-        String boxofficeResponse = OkHttpUtils.get(boxOfficeUrl + boxOfficeKey);
-        log.info(boxofficeResponse);
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String targetDt = yesterday.format(formatter);
+
+        UriComponents boxofficeUri = UriComponentsBuilder.newInstance()
+                .path(boxOfficeUrl)
+                .queryParam("targetDt", targetDt)
+                .queryParam("key",boxOfficeKey)
+                .build();
+
+        String boxofficeResponse = OkHttpUtils.get(boxofficeUri.toString());
         JsonParser jsonParser = new JsonParser();
         JsonObject boxofficeRespToJson = (JsonObject) jsonParser.parse(boxofficeResponse);
         JsonObject boxOfficeResult = boxofficeRespToJson.getAsJsonObject("boxOfficeResult");
@@ -43,14 +64,22 @@ public class MovieServiceImpl implements MovieService{
         for(int i=0; i<dailyBoxOfficeList.size(); i++) {
             String movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm").getAsString();
             String audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc").getAsString();
-            String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString();
+            String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString().replace("-","");
             String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
-            String kmdbResponse = OkHttpUtils.get(kmdburl + kmdbKey + "&title=" + movieNm);
+            UriComponents kmdbUri = UriComponentsBuilder.newInstance()
+                    .path(kmdbUrl)
+                    .queryParam("collection", kmdbCollection)
+                    .queryParam("detail", kmdbDetail)
+                    .queryParam("ServiceKey",kmdbKey)
+                    .queryParam("title", movieNm)
+                    .queryParam("releaseDts", openDt)
+                    .build();
+
+            String kmdbResponse = OkHttpUtils.get(kmdbUri.toString());
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
-            log.info(kmdbResponse);
 
             String docId = kmdbResult.get("DOCID").getAsString();
             String posters = kmdbResult.get("posters").getAsString();

@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @Log4j2
 public class MovieController {
+
     private MovieService movieService;
 
     public MovieController(MovieService movieService) {
@@ -23,7 +24,8 @@ public class MovieController {
 
     @GetMapping(value = "/home")
     public ResponseEntity<List<Movie>> BoxofficeList(HttpSession session) throws JsonProcessingException {
-        List<Movie> boxofficeList = movieService.getBoxofficeList();
+        List<Movie> boxofficeList = movieService.getDailyBoxofficeList();
+
         return ResponseEntity.ok(boxofficeList);
     }
 
