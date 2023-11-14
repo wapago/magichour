@@ -1,8 +1,8 @@
 package com.example.magichour.service.member;
 
 import com.example.magichour.entity.member.Member;
-import com.example.magichour.model.member.JoinRequest;
-import com.example.magichour.model.member.LoginRequest;
+import com.example.magichour.dto.member.JoinRequest;
+import com.example.magichour.dto.member.LoginRequest;
 import com.example.magichour.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
