@@ -3,22 +3,28 @@ package com.example.magichour.service.member;
 import com.example.magichour.entity.member.Member;
 import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
+import com.example.magichour.jwt.TokenProvider;
 import com.example.magichour.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @Log4j2
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private MemberRepository memberRepository;
+    private TokenProvider tokenProvider;
 
-    public UserServiceImpl(MemberRepository repository) {
+    public UserServiceImpl(MemberRepository repository, TokenProvider tokenProvider) {
         this.memberRepository = repository;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
-    public void join(JoinRequest joinRequest) {
+    public Member join(JoinRequest joinRequest) {
+
         Member member = Member.builder()
                 .userId(joinRequest.getUserId())
                 .userName(joinRequest.getUserName())
@@ -26,12 +32,15 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         memberRepository.save(member);
+
+        return member;
     }
 
     @Override
-    public Member login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         Member member = memberRepository.findByUserId(loginRequest.getUserId());
+        String userId = member.getUserId();
 
-        return member;
+        return tokenProvider.createJwt(userId);
     }
 }

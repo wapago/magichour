@@ -5,6 +5,6 @@ import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
 
 public interface UserService {
-    void join(JoinRequest joinRequest);
-    Member login(LoginRequest loginRequest);
+    Member join(JoinRequest joinRequest);
+    String login(LoginRequest loginRequest);
 }
