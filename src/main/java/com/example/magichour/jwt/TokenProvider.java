@@ -14,19 +14,19 @@ import java.util.Date;
 
 @Component
 public class TokenProvider implements InitializingBean {
-    private Key key;
-    private final String secretKey;
+    private static Key secretKey;
+    private final String secret;
     private final long tokenValidityInMillSeconds;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenProvider(@Value("${spring.jwt.secret}") String secretKey,
+    public TokenProvider(@Value("${spring.jwt.secret}") String secret,
                          @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
-        this.secretKey = secretKey;
+        this.secret = secret;
         this.tokenValidityInMillSeconds = tokenValidityInSeconds * 1000;
     }
 
@@ -38,8 +38,20 @@ public class TokenProvider implements InitializingBean {
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidityInMillSeconds))
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public static boolean isExpired(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().getExpiration().before(new Date());
+    }
+
+    public static String getUserId(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().get("userId", String.class);
+    }
+
+
 
 }
