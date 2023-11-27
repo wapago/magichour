@@ -6,6 +6,7 @@ import com.example.magichour.dto.member.LoginRequest;
 import com.example.magichour.service.member.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +32,10 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
         String token = userService.login(loginRequest);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Authorization", "Bearer " + token);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok().headers(responseHeaders).build();
     }
 
 }
