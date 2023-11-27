@@ -23,6 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Member join(JoinRequest joinRequest) {
+        String requestId = joinRequest.getUserId();
+        boolean isExistId = memberRepository.existsByUserId(requestId);
+
+        if(isExistId) {
+            throw new RuntimeException("======== 이미 존재하는 아이디입니다 ========");
+        }
 
         Member member = Member.builder()
                 .userId(joinRequest.getUserId())
