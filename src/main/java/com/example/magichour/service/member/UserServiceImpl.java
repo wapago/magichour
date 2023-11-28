@@ -8,6 +8,8 @@ import com.example.magichour.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @Log4j2
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService {
         String requestId = joinRequest.getUserId();
         boolean isExistId = memberRepository.existsByUserId(requestId);
 
-        if(isExistId) {
+        if (isExistId) {
             throw new RuntimeException("======== 이미 존재하는 아이디입니다 ========");
         }
 
@@ -43,7 +45,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(LoginRequest loginRequest) {
-        Member member = memberRepository.findByUserId(loginRequest.getUserId());
+        Optional<Member> memberOptional = memberRepository.findByUserId(loginRequest.getUserId());
+
+        if (!memberOptional.isPresent()) {
+            throw new RuntimeException("======== 존재하지 않는 회원입니다 ========");
+        }
+
+        Member member = memberOptional.get();
         String userId = member.getUserId();
 
         return tokenProvider.createJwt(userId);
