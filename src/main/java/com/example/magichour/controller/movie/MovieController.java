@@ -30,7 +30,7 @@ public class MovieController {
         return ResponseEntity.ok(boxofficeList);
     }
 
-    @PostMapping(value = "/comment")
+    @PostMapping(value = "/movie/comment")
     public ResponseEntity<String> commentMovie(Authentication authentication) {
         return ResponseEntity.ok().body(authentication.getName() + "님의 코멘트가 등록되었습니다.");
     }
