@@ -1,13 +1,16 @@
 package com.example.magichour.service.member;
 
+import com.example.magichour.entity.member.Authority;
 import com.example.magichour.entity.member.Member;
 import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
 import com.example.magichour.jwt.TokenProvider;
 import com.example.magichour.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 
@@ -17,10 +20,12 @@ public class UserServiceImpl implements UserService {
 
     private MemberRepository memberRepository;
     private TokenProvider tokenProvider;
+    private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(MemberRepository repository, TokenProvider tokenProvider) {
+    public UserServiceImpl(MemberRepository repository, TokenProvider tokenProvider, PasswordEncoder passwordEncoder) {
         this.memberRepository = repository;
         this.tokenProvider = tokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,10 +37,16 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("======== 이미 존재하는 아이디입니다 ========");
         }
 
+        Authority authority = Authority.builder()
+                .authorityName("ROLE_USER")
+                .build();
+
         Member member = Member.builder()
                 .userId(joinRequest.getUserId())
                 .userName(joinRequest.getUserName())
-                .userPassword(joinRequest.getUserPassword())
+                .userPassword(passwordEncoder.encode(joinRequest.getUserPassword()))
+                .authorities(Collections.singleton(authority))
+                .activated(true)
                 .build();
 
         memberRepository.save(member);

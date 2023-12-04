@@ -1,10 +1,9 @@
 package com.example.magichour.config;
 
 import com.example.magichour.jwt.JwtFilter;
-import com.example.magichour.service.member.UserService;
+import com.example.magichour.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,10 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class CustomSecurityConfig {
 
-    private final UserService userService;
-
-    @Value("${spring.jwt.secret}")
-    private String secretKey;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -47,10 +43,9 @@ public class CustomSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
 
                 .and()
-                .addFilterBefore(new JwtFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
 
                 .build();
-
     }
 
     @Bean
