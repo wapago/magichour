@@ -1,5 +1,6 @@
 package com.example.magichour.jwt;
 
+import com.example.magichour.entity.member.Authority;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +18,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,9 +34,9 @@ public class TokenProvider {
         this.tokenValidityInMillSeconds = tokenValidityInMillSeconds;
     }
 
-    public String createJwt(String userId) {
-        Claims claims = Jwts.claims();
-        claims.put("userId", userId);
+    public String createJwt(String userId, Set<Authority> authoritySet) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("auth", authoritySet);
 
         return Jwts.builder()
                 .setClaims(claims)

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -64,7 +65,8 @@ public class UserServiceImpl implements UserService {
 
         Member member = memberOptional.get();
         String userId = member.getUserId();
+        Set<Authority> authoritySet = member.getAuthorities();
 
-        return tokenProvider.createJwt(userId);
+        return tokenProvider.createJwt(userId, authoritySet);
     }
 }
