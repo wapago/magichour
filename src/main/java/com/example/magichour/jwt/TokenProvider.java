@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Component
 @Log4j2
 public class TokenProvider {
+    private static final String AUTHORITIES_KEY = "auth";
     private static Key secretKey;
     private final long tokenValidityInMillSeconds;
 
@@ -34,12 +35,14 @@ public class TokenProvider {
         this.tokenValidityInMillSeconds = tokenValidityInMillSeconds;
     }
 
-    public String createJwt(String userId, Set<Authority> authoritySet) {
-        Claims claims = Jwts.claims().setSubject(userId);
-        claims.put("auth", authoritySet);
+    public String createJwt(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidityInMillSeconds))
                 .signWith(secretKey, SignatureAlgorithm.HS512)
@@ -54,13 +57,13 @@ public class TokenProvider {
         }
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
     }
 
     public boolean validateToken(String token) {

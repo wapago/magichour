@@ -6,13 +6,15 @@ import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
 import com.example.magichour.jwt.TokenProvider;
 import com.example.magichour.repository.MemberRepository;
+import com.example.magichour.util.SecurityUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Service
@@ -56,17 +58,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest, Authentication authentication) {
         Optional<Member> memberOptional = memberRepository.findByUserId(loginRequest.getUserId());
 
         if (!memberOptional.isPresent()) {
             throw new RuntimeException("======== 존재하지 않는 회원입니다 ========");
         }
 
-        Member member = memberOptional.get();
-        String userId = member.getUserId();
-        Set<Authority> authoritySet = member.getAuthorities();
+        return tokenProvider.createJwt(authentication);
+    }
 
-        return tokenProvider.createJwt(userId, authoritySet);
+    @Transactional(readOnly = true)
+    public Optional<Member> getUserWithAuthorities(String userId) {
+        return memberRepository.findOneWithAuthoritiesByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Member> getMyUserWithAuthorities() {
+        return SecurityUtil.getCurrentUserId().flatMap(memberRepository::findOneWithAuthoritiesByUserId);
     }
 }
