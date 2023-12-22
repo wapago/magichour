@@ -1,6 +1,8 @@
 package com.example.magichour.jwt;
 
-import com.example.magichour.entity.member.Authority;
+import com.example.magichour.dto.member.TokenDto;
+import com.example.magichour.entity.member.RefreshToken;
+import com.example.magichour.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -18,7 +20,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,25 +28,47 @@ public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static Key secretKey;
     private final long tokenValidityInMillSeconds;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenProvider(@Value("${spring.jwt.secret}") String secret,
-                         @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInMillSeconds) {
+                         @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInMillSeconds,
+                         RefreshTokenRepository refreshTokenRepository) {
         byte[] keyBytes = Decoders.BASE64URL.decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.tokenValidityInMillSeconds = tokenValidityInMillSeconds;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public String createJwt(Authentication authentication) {
+    public TokenDto createJwt(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        String accessToken = generateAccessToken(authentication, authorities);
+        String refreshToken = generateRefreshToken(authentication, authorities);
+
+        refreshTokenRepository.save(RefreshToken.builder().refreshToken(refreshToken).userId(authentication.getName()).build());
+
+        return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+    }
+
+    public String generateAccessToken(Authentication authentication, String authorities) {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidityInMillSeconds))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(Authentication authentication, String authorities) {
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1*(1000*60*60*24*7)))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 

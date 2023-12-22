@@ -43,12 +43,13 @@ public class MemberController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = userService.login(loginRequest, authentication);
+        TokenDto tokenDto = userService.login(loginRequest, authentication);
+        String accessToken = tokenDto.getAccessToken();
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Authorization", "Bearer " + token);
+        responseHeaders.set("Authorization", "Bearer " + accessToken);
 
-        return new ResponseEntity<>(new TokenDto(token), responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(tokenDto, responseHeaders, HttpStatus.OK);
     }
 
     @GetMapping("/getMyUserInfo")

@@ -1,5 +1,6 @@
 package com.example.magichour.service.member;
 
+import com.example.magichour.dto.member.TokenDto;
 import com.example.magichour.entity.member.Authority;
 import com.example.magichour.entity.member.Member;
 import com.example.magichour.dto.member.JoinRequest;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(LoginRequest loginRequest, Authentication authentication) {
+    public TokenDto login(LoginRequest loginRequest, Authentication authentication) {
         Optional<Member> memberOptional = memberRepository.findByUserId(loginRequest.getUserId());
 
         if (!memberOptional.isPresent()) {
