@@ -47,7 +47,7 @@ public class TokenProvider {
         String accessToken = generateAccessToken(authentication, authorities);
         String refreshToken = generateRefreshToken(authentication, authorities);
 
-        refreshTokenRepository.save(RefreshToken.builder().refreshToken(refreshToken).userId(authentication.getName()).build());
+        refreshTokenRepository.save(RefreshToken.builder().refreshToken(refreshToken).userId(authentication.getName()).expired(false).build());
 
         return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }

@@ -2,6 +2,7 @@ package com.example.magichour.config;
 
 import com.example.magichour.jwt.JwtFilter;
 import com.example.magichour.jwt.TokenProvider;
+import com.example.magichour.service.member.LogoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomSecurityConfig {
 
     private final TokenProvider tokenProvider;
+    private final LogoutService logoutService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -46,6 +49,11 @@ public class CustomSecurityConfig {
 
                 .and()
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .logout(logoutConfig -> { logoutConfig
+                        .logoutUrl("/auth/logout")
+                        .addLogoutHandler(logoutService)
+                        .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()));
+                })
 
                 .build();
     }
