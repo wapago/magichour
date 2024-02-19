@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Log4j2
 @Configuration
@@ -34,13 +35,14 @@ public class CustomSecurityConfig {
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors()
+                .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
 
                 .and()
                 .authorizeHttpRequests()    // HttpServletRequest를 사용하는 요청들에 대한 접근제한을 설정
                 .requestMatchers("/home").permitAll()
                 .requestMatchers("/member/join").permitAll()   // 회원가입 api
                 .requestMatchers("/member/login").permitAll()
+                .requestMatchers("/api/hello").permitAll()
                 .anyRequest().authenticated()
 
                 .and()

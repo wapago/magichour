@@ -32,6 +32,8 @@ public class MemberController {
 
     @PostMapping("/join")
     public ResponseEntity<Member> join(@Valid @RequestBody JoinRequest joinRequest) {
+        log.info("======================= /member/join =======================");
+
         return ResponseEntity.ok(userService.join(joinRequest));
     }
 

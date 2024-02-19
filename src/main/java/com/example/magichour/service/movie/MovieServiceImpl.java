@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
+import okhttp3.Request;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
@@ -82,7 +83,7 @@ public class MovieServiceImpl implements MovieService {
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
 
             String docId = kmdbResult.get("DOCID").getAsString();
-            String posters = kmdbResult.get("posters").getAsString();
+            String posterUrl = kmdbResult.get("posters").getAsString().split("\\|")[0];
             String prodYear = kmdbResult.get("prodYear").getAsString();
             String nation = kmdbResult.get("nation").getAsString();
             String runtime = kmdbResult.get("runtime").getAsString();
@@ -99,7 +100,7 @@ public class MovieServiceImpl implements MovieService {
             movieObject.addProperty("openDt", openDt);      // 개봉일
             movieObject.addProperty("rank", rank);          // 랭킹
             movieObject.addProperty("docId", docId);
-            movieObject.addProperty("posters", posters);    // 포스터 url
+            movieObject.addProperty("posterUrl", posterUrl);    // 포스터 url
             movieObject.addProperty("prodYear", prodYear);
             movieObject.addProperty("nation", nation);
             movieObject.addProperty("runtime", runtime);

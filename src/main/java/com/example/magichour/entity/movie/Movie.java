@@ -10,12 +10,12 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class Movie {
+    private String docId;
     private String movieNm;
     private String audiAcc;
     private String openDt;
     private String rank;
-    private String posters;
-    private String docId;
+    private String posterUrl;
     private String prodYear;
     private List<Director> directors;
     private String nation;
