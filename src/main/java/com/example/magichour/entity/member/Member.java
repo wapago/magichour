@@ -4,8 +4,6 @@ import com.example.magichour.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name = "member")
 @Getter
@@ -31,10 +29,6 @@ public class Member extends BaseEntity {
     @Column(name = "activated")
     private boolean activated;
 
-    @ManyToMany
-    @JoinTable(
-            name = "member_authority",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 }

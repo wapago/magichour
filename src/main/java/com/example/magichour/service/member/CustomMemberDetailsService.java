@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component("memberDetailsService")
@@ -35,9 +35,9 @@ public class CustomMemberDetailsService implements UserDetailsService {
         if(!member.isActivated()) {
             throw new RuntimeException(userId + "는 활성화되어있지 않습니다.");
         }
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
+
+        List<GrantedAuthority> grantedAuthorities =
+                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().name()));
 
         for(GrantedAuthority authority : grantedAuthorities) {
             log.info(authority.toString());

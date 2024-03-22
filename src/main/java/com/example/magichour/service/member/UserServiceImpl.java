@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
     private TokenProvider tokenProvider;
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(MemberRepository repository, TokenProvider tokenProvider, PasswordEncoder passwordEncoder) {
-        this.memberRepository = repository;
+    public UserServiceImpl(MemberRepository memberRepository, TokenProvider tokenProvider, PasswordEncoder passwordEncoder) {
+        this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
         this.passwordEncoder = passwordEncoder;
     }
@@ -41,15 +41,13 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("======== 이미 존재하는 아이디입니다 ========");
         }
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
+        Authority authority = Authority.USER;
 
         Member member = Member.builder()
                 .userId(joinRequest.getUserId())
                 .userName(joinRequest.getUserName())
                 .userPassword(passwordEncoder.encode(joinRequest.getUserPassword()))
-                .authorities(Collections.singleton(authority))
+                .authority(authority)
                 .activated(true)
                 .build();
 
