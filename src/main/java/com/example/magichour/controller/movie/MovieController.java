@@ -5,6 +5,7 @@ import com.example.magichour.service.movie.MovieService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,14 +15,11 @@ import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 @Log4j2
 public class MovieController {
 
-    private MovieService movieService;
-
-    public MovieController(MovieService movieService) {
-            this.movieService = movieService;
-    }
+    private final MovieService movieService;
 
     @GetMapping(value = "/home")
     public ResponseEntity<List<Movie>> BoxofficeList(HttpSession session) throws JsonProcessingException {
