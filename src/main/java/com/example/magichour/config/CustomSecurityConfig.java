@@ -37,16 +37,15 @@ public class CustomSecurityConfig {
                 .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
 
                 .and()
-                .authorizeHttpRequests()    // HttpServletRequest를 사용하는 요청들에 대한 접근제한을 설정
+                .authorizeHttpRequests()
                 .requestMatchers("/home").permitAll()
-                .requestMatchers("/member/join").permitAll()   // 회원가입 api
-                .requestMatchers("/member/login").permitAll()
-                .requestMatchers("/api/hello").permitAll()
+                .requestMatchers("/api/auth/join").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
