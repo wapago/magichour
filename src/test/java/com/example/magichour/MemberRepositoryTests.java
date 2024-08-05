@@ -1,7 +1,7 @@
 package com.example.magichour;
 
-import com.example.magichour.entity.member.Member;
-import com.example.magichour.repository.MemberRepository;
+import com.example.magichour.entity.member.UserEntity;
+import com.example.magichour.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,18 +12,18 @@ import java.util.stream.IntStream;
 public class MemberRepositoryTests {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private UserRepository memberRepository;
 
     @Test
     public void joinTest() {
         IntStream.rangeClosed(2, 2).forEach(i -> {
-            Member member = Member.builder()
-                    .userId("thekk")
+            UserEntity member = UserEntity.builder()
+                    .userEmail("thekk")
                     .userName("Kim Chanho")
                     .userPassword("rlacksgh3#")
                     .build();
 
-            Member result = memberRepository.save(member);
+            UserEntity result = memberRepository.save(member);
 
         });
     }
