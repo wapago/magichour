@@ -30,7 +30,6 @@ public class CustomSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        log.info("---------configure---------");
 
         return httpSecurity
                 .httpBasic().disable()
