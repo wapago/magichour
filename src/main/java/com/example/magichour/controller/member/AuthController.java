@@ -1,11 +1,12 @@
 package com.example.magichour.controller.member;
 
 import com.example.magichour.dto.member.TokenDto;
-import com.example.magichour.entity.member.Member;
 import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
-import com.example.magichour.service.member.UserService;
+import com.example.magichour.entity.member.UserEntity;
+import com.example.magichour.service.member.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,19 +20,15 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
 @Log4j2
-public class MemberController {
-    private UserService userService;
+public class AuthController {
+    private final AuthService userService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public MemberController(UserService userService, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.userService = userService;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
-
     @PostMapping("/join")
-    public ResponseEntity<Member> join(@Valid @RequestBody JoinRequest joinRequest) {
+    public ResponseEntity<UserEntity> join(@Valid @RequestBody JoinRequest joinRequest) {
         log.info("======================= /member/join =======================");
 
         return ResponseEntity.ok(userService.join(joinRequest));
@@ -40,7 +37,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserId(), loginRequest.getUserPassword());
+                new UsernamePasswordAuthenticationToken(loginRequest.getUserEmail(), loginRequest.getUserPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -56,13 +53,13 @@ public class MemberController {
 
     @GetMapping("/getMyUserInfo")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<Member> getMyUserInfo() {
+    public ResponseEntity<UserEntity> getMyUserInfo() {
         return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
     }
 
     @GetMapping("/banish/{user_id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Member> banish(@PathVariable("user_id") String userId) {
+    public ResponseEntity<UserEntity> banish(@PathVariable("user_id") String userId) {
         log.info(userId + " 강퇴");
         return ResponseEntity.ok(userService.getUserWithAuthorities(userId).get());
     }
