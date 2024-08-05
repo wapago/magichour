@@ -5,20 +5,20 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "member")
+@Table(name = "users")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Member extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    @Column(name = "user_id", length = 50, nullable = false)
-    private String userId;
+    @Column(name = "user_email", length = 50, nullable = false)
+    private String userEmail;
 
     @Column(name = "user_password", length = 100, nullable = false)
     private String userPassword;
