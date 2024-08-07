@@ -1,7 +1,6 @@
 package com.example.magichour.service.movie;
 
 import com.example.magichour.entity.movie.Movie;
-import com.example.magichour.util.OkHttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
@@ -10,8 +9,7 @@ import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +37,6 @@ public class MovieService {
     @Value("${kmdb.api_key}")
     private String kmdbKey;
 
-
     public List<Movie> getDailyBoxofficeList() throws JsonProcessingException {
         List<Movie> movieList = new ArrayList<>();
 
@@ -48,17 +45,27 @@ public class MovieService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String targetDt = yesterday.format(formatter);
 
-        UriComponents boxofficeUri = UriComponentsBuilder.newInstance()
-                .path(boxOfficeUrl)
-                .queryParam("targetDt", targetDt)
-                .queryParam("key",boxOfficeKey)
+        WebClient boxofficeWebClient = WebClient.builder()
+                .baseUrl(boxOfficeUrl)
                 .build();
 
-        String boxofficeResponse = OkHttpUtils.get(boxofficeUri.toString());
+        String boxofficeResponse = boxofficeWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("targetDt", targetDt)
+                        .queryParam("key", boxOfficeKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
         JsonParser jsonParser = new JsonParser();
         JsonObject boxofficeRespToJson = (JsonObject) jsonParser.parse(boxofficeResponse);
         JsonObject boxOfficeResult = boxofficeRespToJson.getAsJsonObject("boxOfficeResult");
         JsonArray dailyBoxOfficeList = boxOfficeResult.getAsJsonArray("dailyBoxOfficeList");
+
+        WebClient kmdbWebClient = WebClient.builder()
+                .baseUrl(kmdbUrl)
+                .build();
 
         for(int i=0; i<dailyBoxOfficeList.size(); i++) {
             String movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm").getAsString();
@@ -66,16 +73,18 @@ public class MovieService {
             String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString().replace("-","");
             String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
-            UriComponents kmdbUri = UriComponentsBuilder.newInstance()
-                    .path(kmdbUrl)
-                    .queryParam("collection", kmdbCollection)
-                    .queryParam("detail", kmdbDetail)
-                    .queryParam("ServiceKey",kmdbKey)
-                    .queryParam("title", movieNm)
-                    .queryParam("releaseDts", openDt)
-                    .build();
+            String kmdbResponse = kmdbWebClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("collection", kmdbCollection)
+                            .queryParam("detail", kmdbDetail)
+                            .queryParam("ServiceKey",kmdbKey)
+                            .queryParam("title", movieNm)
+                            .queryParam("releaseDts", openDt)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-            String kmdbResponse = OkHttpUtils.get(kmdbUri.toString());
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
@@ -115,5 +124,6 @@ public class MovieService {
         }
 
         return movieList;
+
     }
 }

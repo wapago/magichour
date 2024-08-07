@@ -37,8 +37,6 @@ dependencies {
 
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // okhttp
-    implementation('com.squareup.okhttp3:okhttp:4.10.0')
     // webclient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     // gson
