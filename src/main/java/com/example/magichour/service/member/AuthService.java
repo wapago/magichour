@@ -1,7 +1,7 @@
 package com.example.magichour.service.member;
 
 import com.example.magichour.dto.member.TokenDto;
-import com.example.magichour.entity.member.Authority;
+import com.example.magichour.enums.Authority;
 import com.example.magichour.dto.member.JoinRequest;
 import com.example.magichour.dto.member.LoginRequest;
 import com.example.magichour.entity.member.UserEntity;

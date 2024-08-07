@@ -1,6 +1,7 @@
 package com.example.magichour.entity.member;
 
 import com.example.magichour.entity.BaseEntity;
+import com.example.magichour.enums.Authority;
 import jakarta.persistence.*;
 import lombok.*;
 

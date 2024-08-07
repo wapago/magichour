@@ -1,6 +1,6 @@
 package com.example.magichour.service.movie;
 
-import com.example.magichour.entity.movie.Movie;
+import com.example.magichour.dto.movie.Movie;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
@@ -40,8 +40,7 @@ public class MovieService {
     public List<Movie> getDailyBoxofficeList() throws JsonProcessingException {
         List<Movie> movieList = new ArrayList<>();
 
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
+        LocalDate yesterday = LocalDate.now().minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String targetDt = yesterday.format(formatter);
 
@@ -57,6 +56,9 @@ public class MovieService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+
+        log.info("=============== BOXOFFICE RESPONSE ===============");
+        log.info(boxofficeResponse);
 
         JsonParser jsonParser = new JsonParser();
         JsonObject boxofficeRespToJson = (JsonObject) jsonParser.parse(boxofficeResponse);
@@ -84,6 +86,9 @@ public class MovieService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+
+            log.info("=============== KMDB RESPONSE ===============");
+            log.info(kmdbResponse);
 
             JsonObject kmdbRespToJson = (JsonObject) jsonParser.parse(kmdbResponse);
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);

@@ -1,6 +1,6 @@
 package com.example.magichour.controller.movie;
 
-import com.example.magichour.entity.movie.Movie;
+import com.example.magichour.dto.movie.Movie;
 import com.example.magichour.service.movie.MovieService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

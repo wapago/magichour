@@ -1,4 +1,4 @@
-package com.example.magichour.entity.movie;
+package com.example.magichour.dto.movie;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
