@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class JoinRequest {
-    @NotBlank(message = "아이디를 입력하세요")
-    private String userId;
+    @NotBlank(message = "이메일을 입력하세요")
+    private String userEmail;
 
     @NotBlank(message = "비밀번호를 입력하세요")
     private String userPassword;

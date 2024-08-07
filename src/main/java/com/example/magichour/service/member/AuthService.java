@@ -28,32 +28,32 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public UserEntity join(JoinRequest joinRequest) {
-        String requestId = joinRequest.getUserId();
-        boolean isExistId = userRepository.existsByUserId(requestId);
+        String requestEmail = joinRequest.getUserEmail();
+        boolean isExistEmail = userRepository.existsByUserEmail(requestEmail);
 
-        if (isExistId) {
-            throw new RuntimeException("======== 이미 존재하는 아이디입니다 ========");
+        if (isExistEmail) {
+            throw new RuntimeException("======== 이미 존재하는 이메일입니다 ========");
         }
 
         Authority authority = Authority.USER;
 
-        UserEntity member = UserEntity.builder()
-                .userEmail(joinRequest.getUserId())
+        UserEntity user = UserEntity.builder()
+                .userEmail(joinRequest.getUserEmail())
                 .userName(joinRequest.getUserName())
                 .userPassword(passwordEncoder.encode(joinRequest.getUserPassword()))
                 .authority(authority)
                 .activated(true)
                 .build();
 
-        userRepository.save(member);
+        userRepository.save(user);
 
-        return member;
+        return user;
     }
 
     public TokenDto login(LoginRequest loginRequest, Authentication authentication) {
-        Optional<UserEntity> memberOptional = userRepository.findByUserId(loginRequest.getUserEmail());
+        Optional<UserEntity> userOptional = userRepository.findByUserEmail(loginRequest.getUserEmail());
 
-        if (!memberOptional.isPresent()) {
+        if (!userOptional.isPresent()) {
             throw new RuntimeException("======== 존재하지 않는 회원입니다 ========");
         }
 
@@ -61,12 +61,12 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserEntity> getUserWithAuthorities(String userId) {
-        return userRepository.findOneWithAuthoritiesByUserId(userId);
+    public Optional<UserEntity> getUserWithAuthorities(String userEmail) {
+        return userRepository.findOneWithAuthoritiesByUserEmail(userEmail);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserEntity> getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUserId().flatMap(userRepository::findOneWithAuthoritiesByUserId);
+        return SecurityUtil.getCurrentUserId().flatMap(userRepository::findOneWithAuthoritiesByUserEmail);
     }
 }
