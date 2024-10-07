@@ -1,9 +1,14 @@
 spring:
-  datasource:
+  datasource-meta:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/movie
-    username: portfolio
-    password: 2841
+    jdbc-url: jdbc:mysql://localhost:3306/magichour_meta
+    username: kaka
+    password: kaka
+  datasource-data:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://localhost:3306/magichour
+    username: kaka
+    password: kaka
 
   jpa:
     properties:
@@ -12,6 +17,10 @@ spring:
         show-sql: true
     hibernate:
       ddl-auto: update
+
+  batch:
+    job:
+      enabled: false
 
   jwt:
     header: Authorization
