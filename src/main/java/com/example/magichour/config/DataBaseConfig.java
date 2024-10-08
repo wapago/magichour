@@ -32,7 +32,7 @@ public class DataBaseConfig {
         LocalContainerEntityManagerFactoryBean emBean = new LocalContainerEntityManagerFactoryBean();
 
         emBean.setDataSource(dataBaseSource());
-        emBean.setPackagesToScan(new String[]{"com.example.magichour.entity.member"});
+        emBean.setPackagesToScan(new String[]{"com.example.magichour.entity", "com.example.magichour.entity.member"});
         emBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         HashMap<String, Object> properties = new HashMap<>();
