@@ -37,9 +37,9 @@ public class WinBatch {
 
     @Bean
     public Job secondJob() {
-        log.info("============ SECOND JOB ============");
+        log.info("============ WIN BATCH JOB ============");
 
-        return new JobBuilder("secondjob", jobRepository)
+        return new JobBuilder("winbatchjob", jobRepository)
                 .start(secondStep())
                 .build();
     }
