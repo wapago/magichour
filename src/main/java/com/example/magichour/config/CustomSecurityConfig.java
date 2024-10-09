@@ -38,9 +38,10 @@ public class CustomSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/home").permitAll()
-                .requestMatchers("/api/auth/join").permitAll()
-                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/*").permitAll()
+//                .requestMatchers("/home").permitAll()
+//                .requestMatchers("/api/auth/join").permitAll()
+//                .requestMatchers("/api/auth/login").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
