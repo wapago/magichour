@@ -22,10 +22,17 @@ public class MovieController {
     private final MovieService movieService;
 
     @GetMapping(value = "/home")
-    public ResponseEntity<List<Movie>> BoxofficeList(HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<List<Movie>> boxofficeList(HttpSession session) throws JsonProcessingException {
         List<Movie> boxofficeList = movieService.getDailyBoxofficeList();
 
         return ResponseEntity.ok(boxofficeList);
+    }
+
+    @GetMapping(value = "/book/{docId}")
+    public ResponseEntity<Movie> movieDetail(HttpSession session, @PathVariable String docId) throws JsonProcessingException {
+        Movie movie = movieService.getMovie(docId);
+
+        return ResponseEntity.ok(movie);
     }
 
     @PostMapping(value = "/movie/comment")

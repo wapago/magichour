@@ -1,11 +1,13 @@
 package com.example.magichour.service.movie;
 
 import com.example.magichour.dto.movie.Movie;
+import com.example.magichour.repository.MovieRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class MovieService {
     @Value("${box_office.url}")
@@ -36,6 +39,8 @@ public class MovieService {
 
     @Value("${kmdb.api_key}")
     private String kmdbKey;
+
+    private final MovieRepository movieRepository;
 
     public List<Movie> getDailyBoxofficeList() throws JsonProcessingException {
         List<Movie> movieList = new ArrayList<>();
@@ -73,6 +78,8 @@ public class MovieService {
             String movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm").getAsString();
             String audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc").getAsString();
             String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString().replace("-","");
+            log.info("===============" + movieNm + "===============");
+            log.info("openDt = " + openDt);
             String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
             String kmdbResponse = kmdbWebClient.get()
@@ -130,5 +137,9 @@ public class MovieService {
 
         return movieList;
 
+    }
+
+    public Movie getMovie(String docId) {
+        movieRepository.findById(docId);
     }
 }
