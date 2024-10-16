@@ -1,6 +1,7 @@
 package com.example.magichour.service.movie;
 
 import com.example.magichour.dto.movie.Movie;
+import com.example.magichour.entity.MovieEntity;
 import com.example.magichour.repository.MovieRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,8 +79,6 @@ public class MovieService {
             String movieNm = dailyBoxOfficeList.get(i).getAsJsonObject().get("movieNm").getAsString();
             String audiAcc = dailyBoxOfficeList.get(i).getAsJsonObject().get("audiAcc").getAsString();
             String openDt = dailyBoxOfficeList.get(i).getAsJsonObject().get("openDt").getAsString().replace("-","");
-            log.info("===============" + movieNm + "===============");
-            log.info("openDt = " + openDt);
             String rank = dailyBoxOfficeList.get(i).getAsJsonObject().get("rank").getAsString();
 
             String kmdbResponse = kmdbWebClient.get()
@@ -101,7 +100,7 @@ public class MovieService {
             JsonObject kmdbData = (JsonObject) kmdbRespToJson.getAsJsonArray("Data").get(0);
             JsonObject kmdbResult = kmdbData.getAsJsonArray("Result").get(0).getAsJsonObject();
 
-            String docId = kmdbResult.get("DOCID").getAsString();
+            String movieId = kmdbResult.get("DOCID").getAsString();
             String posterUrl = kmdbResult.get("posters").getAsString().split("\\|")[0];
             String prodYear = kmdbResult.get("prodYear").getAsString();
             String nation = kmdbResult.get("nation").getAsString();
@@ -118,7 +117,7 @@ public class MovieService {
             movieObject.addProperty("audiAcc", audiAcc);    // 누적관객수
             movieObject.addProperty("openDt", openDt);      // 개봉일
             movieObject.addProperty("rank", rank);          // 랭킹
-            movieObject.addProperty("docId", docId);
+            movieObject.addProperty("movieId", movieId);
             movieObject.addProperty("posterUrl", posterUrl);    // 포스터 url
             movieObject.addProperty("prodYear", prodYear);
             movieObject.addProperty("nation", nation);
@@ -139,7 +138,9 @@ public class MovieService {
 
     }
 
-    public Movie getMovie(String docId) {
-        movieRepository.findById(docId);
+    public MovieEntity getMovie(String movieId) {
+        MovieEntity movie = movieRepository.findById(movieId).orElseThrow();
+
+        return movie;
     }
 }
