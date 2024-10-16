@@ -2,59 +2,67 @@ package com.example.magichour.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class MovieEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String registerId;      // 셀번호0 : 영화등록번호ID(K, F)
-    private String registerNumber;  // 셀번호1 : 영화등록번호NO
+    private String movieId;
 
     @Column(columnDefinition = "longtext")
-    private String title;           // 셀번호2 : 영화명
+    private String movieNm;
+
+    private String genre;
+    private String nation;
+    private String prodYear;
 
     @Column(columnDefinition = "longtext")
-    private String englishTitle;    // 셀번호3 : 영문영화명
+    private String company;
 
     @Column(columnDefinition = "longtext")
-    private String originalTitle;   // 셀번호4 : 원제명
+    private String directors;
 
     @Column(columnDefinition = "longtext")
-    private String type;            // 셀번호5 : 유형(극영화)
-    private String purpose;         // 셀번호6 : 용도(극장용)
-    private String genre;           // 셀번호7 : 장르
-    private String nation;          // 셀번호8 : 제작국가
-    private String year;            // 셀번호9 : 제작연도
+    private String actors;
 
     @Column(columnDefinition = "longtext")
-    private String company;         // 셀번호10 : 제작사
+    private String script;
+
+    private String openDt;
+    private String runtime;
 
     @Column(columnDefinition = "longtext")
-    private String director;        // 셀번호11 : 감독
+    private String keyWord;
 
     @Column(columnDefinition = "longtext")
-    private String starring;        // 출연
+    private String plots;
 
     @Column(columnDefinition = "longtext")
-    private String script;          // 각본
+    private String registerDate;
 
-    private String releaseDate;     // 개봉일
-    private String runningTime;     // 상영시간
-
-    @Column(columnDefinition = "longtext")
-    private String keyWord;         // 키워드
-
-    @Column(columnDefinition = "longtext")
-    private String plot;            // 줄거리
-
-    @Column(columnDefinition = "longtext")
-    private String registerDate;    // 최초등록일
-
-    private String modifiedDate;    // 최종수정일
+    private String modifiedDate;
     private String anonymous;
+
+    public MovieEntity(String movieId, String movieNm, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate, String anonymous) {
+        this.movieId = movieId;
+        this.movieNm = movieNm;
+        this.genre = genre;
+        this.nation = nation;
+        this.prodYear = prodYear;
+        this.company = company;
+        this.directors = directors;
+        this.actors = actors;
+        this.script = script;
+        this.openDt = openDt;
+        this.runtime = runtime;
+        this.keyWord = keyWord;
+        this.plots = plots;
+        this.registerDate = registerDate;
+        this.modifiedDate = modifiedDate;
+        this.anonymous = anonymous;
+    }
 }
