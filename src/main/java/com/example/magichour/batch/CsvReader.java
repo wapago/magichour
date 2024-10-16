@@ -4,7 +4,6 @@ import com.example.magichour.entity.MovieEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.separator.DefaultRecordSeparatorPolicy;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -26,24 +25,37 @@ public class CsvReader {
         flatFileItemReader.setLinesToSkip(1); // header line skip
         flatFileItemReader.setEncoding("EUC-KR");
 
-        // 데이터 내부에 개행이 있으면 꼭! 추가해주세요
+        // 데이터 내부 개행 처리
         flatFileItemReader.setRecordSeparatorPolicy(new DefaultRecordSeparatorPolicy());
 
         DefaultLineMapper<MovieEntity> defaultLineMapper = new DefaultLineMapper<>();
 
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer(",");
-//        delimitedLineTokenizer.setNames(MovieEntity.getFieldNames().toArray(String[]::new));
-        delimitedLineTokenizer.setNames("registerId", "registerNumber", "title", "englishTitle", "originalTitle", "type", "purpose", "genre", "nation", "year", 
-                                        "company", "director", "starring", "script", "releaseDate", "runningTime", "keyWord", "plot", "registerDate", "modifiedDate", "anonymous");
         defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
+        delimitedLineTokenizer.setNames("registerId", "registerNumber", "movieNm", "englishTitle", "originalTitle", "type", "purpose", "genre", "nation", "prodYear",
+                                        "company", "directors", "actors", "script", "openDt", "runtime", "keyWord", "plots", "registerDate", "modifiedDate", "anonymous");
 
-        /* beanWrapperFieldSetMapper : Tokenizer에서 가지고온 데이터들을 VO로 바인드하는 역할 */
-        BeanWrapperFieldSetMapper<MovieEntity> beanWrapperFieldSetMapper = new BeanWrapperFieldSetMapper<>();
-        beanWrapperFieldSetMapper.setTargetType(MovieEntity.class);
+        defaultLineMapper.setFieldSetMapper(fieldSet -> {
+            String movieId = fieldSet.readString("registerId") + fieldSet.readString("registerNumber");
+            String movieNm = fieldSet.readString("movieNm");
+            String genre = fieldSet.readString("genre");
+            String nation = fieldSet.readString("nation");
+            String prodYear = fieldSet.readString("prodYear");
+            String company = fieldSet.readString("company");
+            String directors = fieldSet.readString("directors");
+            String actors = fieldSet.readString("actors");
+            String script = fieldSet.readString("script");
+            String openDt = fieldSet.readString("openDt");
+            String runtime = fieldSet.readString("runtime");
+            String keyWord = fieldSet.readString("keyWord");
+            String plots = fieldSet.readString("plots");
+            String registerDate = fieldSet.readString("registerDate");
+            String modifiedDate = fieldSet.readString("modifiedDate");
+            String anonymous = fieldSet.readString("anonymous");
 
-        defaultLineMapper.setFieldSetMapper(beanWrapperFieldSetMapper);
+            return new MovieEntity(movieId, movieNm, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate, anonymous);
+        });
 
-        /* lineMapper 지정 */
         flatFileItemReader.setLineMapper(defaultLineMapper);
 
         return flatFileItemReader;
