@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class Movie {
-    private String docId;
+    private String movieId;
     private String movieNm;
     private String audiAcc;
     private String openDt;
