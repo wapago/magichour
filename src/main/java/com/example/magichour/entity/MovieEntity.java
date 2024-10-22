@@ -45,9 +45,8 @@ public class MovieEntity {
     private String registerDate;
 
     private String modifiedDate;
-    private String anonymous;
 
-    public MovieEntity(String movieId, String movieNm, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate, String anonymous) {
+    public MovieEntity(String movieId, String movieNm, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate) {
         this.movieId = movieId;
         this.movieNm = movieNm;
         this.genre = genre;
@@ -63,6 +62,5 @@ public class MovieEntity {
         this.plots = plots;
         this.registerDate = registerDate;
         this.modifiedDate = modifiedDate;
-        this.anonymous = anonymous;
     }
 }
