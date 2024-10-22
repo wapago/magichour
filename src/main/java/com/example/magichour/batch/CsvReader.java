@@ -23,7 +23,7 @@ public class CsvReader {
         FlatFileItemReader<MovieEntity> flatFileItemReader = new FlatFileItemReader<>();
         flatFileItemReader.setResource(new ClassPathResource(filePath));
         flatFileItemReader.setLinesToSkip(1); // header line skip
-        flatFileItemReader.setEncoding("EUC-KR");
+        flatFileItemReader.setEncoding("UTF-8");
 
         // 데이터 내부 개행 처리
         flatFileItemReader.setRecordSeparatorPolicy(new DefaultRecordSeparatorPolicy());
@@ -51,9 +51,8 @@ public class CsvReader {
             String plots = fieldSet.readString("plots");
             String registerDate = fieldSet.readString("registerDate");
             String modifiedDate = fieldSet.readString("modifiedDate");
-            String anonymous = fieldSet.readString("anonymous");
 
-            return new MovieEntity(movieId, movieNm, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate, anonymous);
+            return new MovieEntity(movieId, movieNm, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate);
         });
 
         flatFileItemReader.setLineMapper(defaultLineMapper);
