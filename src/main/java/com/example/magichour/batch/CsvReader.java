@@ -38,6 +38,7 @@ public class CsvReader {
         defaultLineMapper.setFieldSetMapper(fieldSet -> {
             String movieId = fieldSet.readString("registerId") + fieldSet.readString("registerNumber");
             String movieNm = fieldSet.readString("movieNm");
+            String purpose = fieldSet.readString("purpose");
             String genre = fieldSet.readString("genre");
             String nation = fieldSet.readString("nation");
             String prodYear = fieldSet.readString("prodYear");
@@ -52,7 +53,7 @@ public class CsvReader {
             String registerDate = fieldSet.readString("registerDate");
             String modifiedDate = fieldSet.readString("modifiedDate");
 
-            return new MovieEntity(movieId, movieNm, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate);
+            return new MovieEntity(movieId, movieNm, purpose, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate);
         });
 
         flatFileItemReader.setLineMapper(defaultLineMapper);

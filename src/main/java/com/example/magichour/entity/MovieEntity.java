@@ -16,6 +16,8 @@ public class MovieEntity {
     @Column(columnDefinition = "longtext")
     private String movieNm;
 
+    private String purpose;
+
     private String genre;
     private String nation;
     private String prodYear;
@@ -46,9 +48,10 @@ public class MovieEntity {
 
     private String modifiedDate;
 
-    public MovieEntity(String movieId, String movieNm, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate) {
+    public MovieEntity(String movieId, String movieNm, String purpose, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate) {
         this.movieId = movieId;
         this.movieNm = movieNm;
+        this.purpose = purpose;
         this.genre = genre;
         this.nation = nation;
         this.prodYear = prodYear;

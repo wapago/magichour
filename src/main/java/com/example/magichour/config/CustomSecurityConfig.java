@@ -38,8 +38,8 @@ public class CustomSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/*").permitAll()
-//                .requestMatchers("/home").permitAll()
+                .requestMatchers("/fourth").permitAll()
+                .requestMatchers("/api/magichour/").permitAll()
 //                .requestMatchers("/api/auth/join").permitAll()
 //                .requestMatchers("/api/auth/login").permitAll()
                 .anyRequest().authenticated()
