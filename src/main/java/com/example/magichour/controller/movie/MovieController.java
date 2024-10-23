@@ -31,8 +31,9 @@ public class MovieController {
     }
 
     @GetMapping(value = "/detail/{movieId}")
-    public ResponseEntity<MovieEntity> movieDetail(HttpSession session, @PathVariable String docId) {
-        MovieEntity movie = movieService.getMovie(docId);
+    public ResponseEntity<MovieEntity> movieDetail(HttpSession session, @PathVariable String movieId) {
+
+        MovieEntity movie = movieService.getMovie(movieId);
 
         return ResponseEntity.ok(movie);
     }
