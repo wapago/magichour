@@ -27,15 +27,15 @@ import java.util.stream.Collectors;
 public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static Key secretKey;
-    private final long tokenValidityInMillSeconds;
+    private final long accessTokenValidityInMillSeconds;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenProvider(@Value("${spring.jwt.secret}") String secret,
-                         @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInMillSeconds,
+                         @Value("${spring.jwt.token-validity-in-seconds}") long accessTokenValidityInMillSeconds,
                          RefreshTokenRepository refreshTokenRepository) {
         byte[] keyBytes = Decoders.BASE64URL.decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-        this.tokenValidityInMillSeconds = tokenValidityInMillSeconds;
+        this.accessTokenValidityInMillSeconds = accessTokenValidityInMillSeconds;
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
@@ -44,30 +44,21 @@ public class TokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        String accessToken = generateAccessToken(authentication, authorities);
-        String refreshToken = generateRefreshToken(authentication, authorities);
+        long refreshTokenValidityInMillSeconds = (1000 * 60 * 60 * 24 * 7);
+        String accessToken = generateToken(authentication, authorities, accessTokenValidityInMillSeconds);
+        String refreshToken = generateToken(authentication, authorities, refreshTokenValidityInMillSeconds);
 
         refreshTokenRepository.save(RefreshToken.builder().refreshToken(refreshToken).userId(authentication.getName()).expired(false).build());
 
         return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
-    public String generateAccessToken(Authentication authentication, String authorities) {
+    public String generateToken(Authentication authentication, String authorities, long expirationTimeInMillis) {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + tokenValidityInMillSeconds))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateRefreshToken(Authentication authentication, String authorities) {
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1*(1000*60*60*24*7)))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMillis))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
