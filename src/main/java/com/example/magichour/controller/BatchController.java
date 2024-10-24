@@ -38,9 +38,9 @@ public class BatchController {
         return "ok";
     }
 
-    @GetMapping("/fourth")
-    public String fourthApi() throws Exception {
-        log.info("============= FOURTH API STARTED ============");
+    @GetMapping("/kmdbcsv")
+    public String kmdbCsvBatch() throws Exception {
+        log.info("============= KMDB_CSV BATCH STARTED ============");
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("timestamp", LocalDateTime.now().toString())
                 .toJobParameters();
