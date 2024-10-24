@@ -39,8 +39,8 @@ public class CustomSecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/magichour/**").permitAll()
-                .requestMatchers("/api/auth/join/").permitAll()
-                .requestMatchers("/api/auth/login/").permitAll()
+                .requestMatchers("/api/auth/join/**").permitAll()
+                .requestMatchers("/api/auth/login/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
