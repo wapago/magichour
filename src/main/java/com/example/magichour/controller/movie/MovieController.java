@@ -5,7 +5,6 @@ import com.example.magichour.entity.MovieEntity;
 import com.example.magichour.service.movie.MovieService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +23,14 @@ public class MovieController {
     private final MovieService movieService;
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<Movie>> boxofficeList(HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<List<Movie>> boxofficeList() throws JsonProcessingException {
         List<Movie> boxofficeList = movieService.getDailyBoxofficeList();
 
         return ResponseEntity.ok(boxofficeList);
     }
 
     @GetMapping(value = "/detail/{movieId}")
-    public ResponseEntity<MovieEntity> movieDetail(HttpSession session, @PathVariable String movieId) {
+    public ResponseEntity<MovieEntity> movieDetail(@PathVariable String movieId) {
 
         MovieEntity movie = movieService.getMovie(movieId);
 
