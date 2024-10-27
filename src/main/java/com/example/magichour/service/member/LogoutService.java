@@ -18,7 +18,7 @@ public class LogoutService implements LogoutHandler {
         log.info(authHeader);
         final String jwt;
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return;
         }
 

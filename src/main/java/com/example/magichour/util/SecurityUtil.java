@@ -13,21 +13,21 @@ public class SecurityUtil {
     public static Optional<String> getCurrentUserId() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null) {
+        if (authentication == null) {
             log.info("Security Context에 인증정보가 없습니다.");
             return Optional.empty();
         }
 
         String userId = null;
 
-        if(authentication.getPrincipal() instanceof UserDetails) {
+        if (authentication.getPrincipal() instanceof UserDetails) {
             log.info("authentication.getPrincipal() instanceof UserDetails");
             UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
             userId = springSecurityUser.getUsername();
             log.info(userId);
         }
 
-        if(authentication.getPrincipal() instanceof String) {
+        if (authentication.getPrincipal() instanceof String) {
             log.info("authentication.getPrincipal() instanceof String");
             userId = (String) authentication.getPrincipal();
             log.info(userId);
