@@ -38,6 +38,7 @@ public class CustomSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers("/kmdbcsv").permitAll()
                 .requestMatchers("/api/magichour/**").permitAll()
                 .requestMatchers("/api/auth/join/**").permitAll()
                 .requestMatchers("/api/auth/login/**").permitAll()
