@@ -14,6 +14,9 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,8 +27,9 @@ public class FileItemReaderJobConfig {
     private final PlatformTransactionManager platformTransactionManager;
     private final CsvReader csvReader;
     private final CsvWriter csvWriter;
+    private final CustomChunkListener customChunkListener;
 
-    private static final int chunkSize = 1000;
+    private static final int chunkSize = 10;
     private final String purpose = "극장용";
 
     @Bean
@@ -42,7 +46,32 @@ public class FileItemReaderJobConfig {
                 .reader(csvReader.csvFileItemReader())
                 .processor(processor())
                 .writer(csvWriter)
+                .listener(customChunkListener)
+                .transactionManager(transactionManagerWithLogging())
                 .build();
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManagerWithLogging() {
+        return new PlatformTransactionManager() {
+            @Override
+            public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+                log.debug("트랜잭션 시작: " + definition.getName());
+                return platformTransactionManager.getTransaction(definition);
+            }
+
+            @Override
+            public void commit(TransactionStatus status) throws TransactionException {
+                log.debug("트랜잭션 커밋");
+                platformTransactionManager.commit(status);
+            }
+
+            @Override
+            public void rollback(TransactionStatus status) throws TransactionException {
+                log.debug("트랜잭션 롤백");
+                platformTransactionManager.rollback(status);
+            }
+        };
     }
 
     @Bean
@@ -53,6 +82,9 @@ public class FileItemReaderJobConfig {
             if(isMovie) {
                 return item;
             }
+
+            log.info(">>>>>>>> Filtered 제목: " + item.getMovieNm());
+            log.info(">>>>>>>> Filtered ID: " + item.getMovieId());
 
             return null;
         };

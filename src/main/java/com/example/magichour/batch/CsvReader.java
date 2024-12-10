@@ -16,7 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 @Slf4j
 public class CsvReader {
 
-    private static final String filePath = "/csv/kmdb_csv.csv";
+    private static final String filePath = "/csv/kmdb_csv2.csv";
 
     @Bean
     public FlatFileItemReader<MovieEntity> csvFileItemReader() {
@@ -33,7 +33,7 @@ public class CsvReader {
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer(",");
         defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
         delimitedLineTokenizer.setNames("registerId", "registerNumber", "movieNm", "englishTitle", "originalTitle", "type", "purpose", "genre", "nation", "prodYear",
-                                        "company", "directors", "actors", "script", "openDt", "runtime", "keyWord", "plots", "registerDate", "modifiedDate", "anonymous");
+                                        "company", "directors", "actors", "script", "openDt", "runtime", "keyWord", "plots", "registerDate", "modifiedDate");
 
         defaultLineMapper.setFieldSetMapper(fieldSet -> {
             String movieId = fieldSet.readString("registerId") + fieldSet.readString("registerNumber");
