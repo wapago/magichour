@@ -2,8 +2,15 @@ box_office:
   url: "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
   api_key: "977408773efa088487a4cf153953630c"
 
+# 영화상세정보
+kobis:
+  url: "http://www.kobis.or.kr/kobisopenapi/webservice/soap/movie"
+  api_key: "977408773efa088487a4cf153953630c"
+
 kmdb:
   url: "http://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp"
   collection: "kmdb_new2"
   detail: "Y"
   api_key: "LZT45SDJ26C2CL3NEF8N"
+  filepath : "/csv/kmdb_csv2.csv"
+  columns: registerId,registerNumber,movieNm,englishTitle,originalTitle,type,purpose,genre,nation,prodYear,company,directors,actors,script,openDt,runtime,keyWord,plots,registerDate,modifiedDate
