@@ -11,6 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MovieEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String movieId;
 
     @Column(columnDefinition = "longtext")
