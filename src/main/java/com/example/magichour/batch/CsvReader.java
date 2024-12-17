@@ -7,16 +7,22 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.separator.DefaultRecordSeparatorPolicy;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class CsvReader {
 
-    private static final String filePath = "/csv/kmdb_csv2.csv";
+    @Value("${kmdb.filepath}")
+    private String filePath;
+
+    @Value("${kmdb.columns}")
+    private String[] columnNames;
 
     @Bean
     public FlatFileItemReader<MovieEntity> csvFileItemReader() {
@@ -32,29 +38,14 @@ public class CsvReader {
 
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer(",");
         defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
-        delimitedLineTokenizer.setNames("registerId", "registerNumber", "movieNm", "englishTitle", "originalTitle", "type", "purpose", "genre", "nation", "prodYear",
-                                        "company", "directors", "actors", "script", "openDt", "runtime", "keyWord", "plots", "registerDate", "modifiedDate");
+        delimitedLineTokenizer.setNames(columnNames);
 
-        defaultLineMapper.setFieldSetMapper(fieldSet -> {
-            String movieId = fieldSet.readString("registerId") + fieldSet.readString("registerNumber");
-            String movieNm = fieldSet.readString("movieNm");
-            String purpose = fieldSet.readString("purpose");
-            String genre = fieldSet.readString("genre");
-            String nation = fieldSet.readString("nation");
-            String prodYear = fieldSet.readString("prodYear");
-            String company = fieldSet.readString("company");
-            String directors = fieldSet.readString("directors");
-            String actors = fieldSet.readString("actors");
-            String script = fieldSet.readString("script");
-            String openDt = fieldSet.readString("openDt");
-            String runtime = fieldSet.readString("runtime");
-            String keyWord = fieldSet.readString("keyWord");
-            String plots = fieldSet.readString("plots");
-            String registerDate = fieldSet.readString("registerDate");
-            String modifiedDate = fieldSet.readString("modifiedDate");
+        BeanWrapperFieldSetMapper<MovieEntity> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(MovieEntity.class);
+        fieldSetMapper.setDistanceLimit(0);
+        fieldSetMapper.setStrict(false);
 
-            return new MovieEntity(movieId, movieNm, purpose, genre, nation, prodYear, company, directors, actors, script, openDt, runtime, keyWord, plots, registerDate, modifiedDate);
-        });
+        defaultLineMapper.setFieldSetMapper(fieldSetMapper);
 
         flatFileItemReader.setLineMapper(defaultLineMapper);
 
