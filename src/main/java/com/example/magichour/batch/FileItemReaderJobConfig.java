@@ -84,6 +84,7 @@ public class FileItemReaderJobConfig {
             }
 
             log.info(">>>>>>>> Filtered 제목: " + item.getMovieNm());
+            log.info(">>>>>>>> Filtered PURPOSE: " + item.getPurpose());
             log.info(">>>>>>>> Filtered ID: " + item.getMovieId());
 
             return null;
