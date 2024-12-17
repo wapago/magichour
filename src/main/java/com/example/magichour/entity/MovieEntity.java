@@ -14,8 +14,6 @@ public class MovieEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String movieId;
-
     @Column(columnDefinition = "longtext")
     private String movieNm;
 
@@ -50,23 +48,4 @@ public class MovieEntity {
     private String registerDate;
 
     private String modifiedDate;
-
-    public MovieEntity(String movieId, String movieNm, String purpose, String genre, String nation, String prodYear, String company, String directors, String actors, String script, String openDt, String runtime, String keyWord, String plots, String registerDate, String modifiedDate) {
-        this.movieId = movieId;
-        this.movieNm = movieNm;
-        this.purpose = purpose;
-        this.genre = genre;
-        this.nation = nation;
-        this.prodYear = prodYear;
-        this.company = company;
-        this.directors = directors;
-        this.actors = actors;
-        this.script = script;
-        this.openDt = openDt;
-        this.runtime = runtime;
-        this.keyWord = keyWord;
-        this.plots = plots;
-        this.registerDate = registerDate;
-        this.modifiedDate = modifiedDate;
-    }
 }
