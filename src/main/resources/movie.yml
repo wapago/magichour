@@ -12,5 +12,9 @@ kmdb:
   collection: "kmdb_new2"
   detail: "Y"
   api_key: "LZT45SDJ26C2CL3NEF8N"
-  filepath : "/csv/kmdb_csv2.csv"
-  columns: registerId,registerNumber,movieNm,englishTitle,originalTitle,type,purpose,genre,nation,prodYear,company,directors,actors,script,openDt,runtime,keyWord,plots,registerDate,modifiedDate
+  filepath : "/csv/kmdb_csv.csv"
+  columns: registerId,registerNumber,movieNm,englishTitle,originalTitle,type,purpose,genre,nation,prodYear,company,directors,actors,script,openDt,runtime,keyWord,plots,registerDate,modifiedDate,anonymous
+  purpose: "극장용"
+  genre: "에로"
+  sql: "INSERT INTO MovieEntity (actors, company, directors, genre, keyWord, modifiedDate, movieNm, nation, openDt, plots, prodYear, purpose, registerDate, runtime, script) 
+        VALUES (:actors, :company, :directors, :genre, :keyWord, :modifiedDate, :movieNm, :nation, :openDt, :plots, :prodYear, :purpose, :registerDate, :runtime, :script)"
