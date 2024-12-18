@@ -11,12 +11,15 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
+
+import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,8 +32,14 @@ public class FileItemReaderJobConfig {
     private final CsvWriter csvWriter;
     private final CustomChunkListener customChunkListener;
 
-    private static final int chunkSize = 10;
-    private final String purpose = "극장용";
+    private static final int chunkSize = 1000;
+    private final DataSource dataSource;
+
+    @Value("${kmdb.purpose}")
+    private String purpose;
+
+    @Value("${kmdb.genre}")
+    private String genre;
 
     @Bean
     public Job csvFileItemReaderJob() {
@@ -45,7 +54,7 @@ public class FileItemReaderJobConfig {
                 .<MovieEntity, MovieEntity> chunk(chunkSize, platformTransactionManager)
                 .reader(csvReader.csvFileItemReader())
                 .processor(processor())
-                .writer(csvWriter)
+                .writer(csvWriter.JdbcBatchItemWriter(dataSource))
                 .listener(customChunkListener)
                 .transactionManager(transactionManagerWithLogging())
                 .build();
@@ -77,21 +86,13 @@ public class FileItemReaderJobConfig {
     @Bean
     public ItemProcessor<MovieEntity, MovieEntity> processor() {
         return item -> {
-            boolean isMovie = item.getPurpose().equals(purpose);
-
-            if(isMovie) {
-                return item;
-            }
-
-            log.info(">>>>>>>> Filtered 제목: " + item.getMovieNm());
-            log.info(">>>>>>>> Filtered PURPOSE: " + item.getPurpose());
-            log.info(">>>>>>>> Filtered ID: " + item.getMovieId());
+            boolean isMovie = item.getPurpose().equals(purpose) && !item.getGenre().equals(genre);
+            if(isMovie) return item;
 
             return null;
         };
     }
 
-    // JobRegistry에 수동으로 Job을 등록하기 위한 빈 추가
     @Bean
     public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() {
         JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
