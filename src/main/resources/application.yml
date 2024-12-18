@@ -6,7 +6,7 @@ spring:
     password: kaka
   datasource-data:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://localhost:3306/magichour
+    jdbc-url: jdbc:mysql://localhost:3306/magichour?rewriteBatchedStatements=true
     username: kaka
     password: kaka
 
