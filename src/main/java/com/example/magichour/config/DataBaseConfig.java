@@ -21,7 +21,7 @@ import java.util.HashMap;
 )
 public class DataBaseConfig {
 
-    @Bean
+    @Bean(name = "datasource-data")
     @ConfigurationProperties(prefix = "spring.datasource-data")
     public DataSource dataBaseSource() {
         return DataSourceBuilder.create().build();
